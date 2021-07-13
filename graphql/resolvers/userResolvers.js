@@ -5,12 +5,19 @@ import config from "config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../../model/User.js";
-import { validateRegisterUser } from "../../util/validator.js";
+import {
+	validateRegisterUser,
+	validateLoginUser,
+} from "../../util/validator.js";
 
 const generateToken = (user) => {
-	return jwt.sign({ id: user.id, email: user.email }, config.get("secret"), {
-		expiresIn: "5h",
-	});
+	return jwt.sign(
+		{ id: user.id, email: user.email, name: user.name, avatar: user.avatar },
+		config.get("secret"),
+		{
+			expiresIn: "5h",
+		},
+	);
 };
 
 const userResolvers = {
@@ -31,9 +38,9 @@ const userResolvers = {
 					errors: { email: "Email is already taken" },
 				});
 
-			const avatar = gravatar.profile_url(
+			const avatar = gravatar.url(
 				email,
-				{ size: "200", rating: "pg", default: "retro" },
+				{ size: "200", rating: "pg", default: "mm" },
 				true,
 			);
 			const newUser = new User({
@@ -44,6 +51,29 @@ const userResolvers = {
 				createdAt: moment(new Date().toISOString()).toDate(),
 			});
 			const user = await newUser.save();
+			const token = generateToken(user);
+			return {
+				...user._doc,
+				id: user._id,
+				token,
+			};
+		},
+
+		loginUser: async (_, { email, password }) => {
+			// validate user
+			const { errors, valid } = validateLoginUser(email, password);
+			if (!valid) throw new UserInputError("Errors", { errors });
+			const user = await User.findOne({ email });
+			if (!user)
+				throw new UserInputError("Wrong credentials", {
+					errors: "username/password mismatch",
+				});
+			const match = await bcrypt.compare(password, user.password);
+			if (!match)
+				throw new UserInputError("Wrong credentials", {
+					errors: "username/password mismatch",
+				});
+
 			const token = generateToken(user);
 			return {
 				...user._doc,

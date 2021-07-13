@@ -1,7 +1,5 @@
 const postResolvers = {
-	Query: {
-		greeting: () => "This is me testing from the server side",
-	},
+	Query: {},
 };
 
 export default postResolvers;
