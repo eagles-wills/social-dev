@@ -47,3 +47,19 @@ export const validateLoginUser = (email, password) => {
 		valid: Object.keys(errors).length < 1,
 	};
 };
+
+export const validateCreateAndUpdateProfile = (status, skills) => {
+	const errors = {};
+
+	if (skills === "") {
+		errors.skills = "Please enter at least one skill";
+	}
+	if (status === "") {
+		errors.status = "status is required";
+	}
+
+	return {
+		errors,
+		valid: Object.keys(errors).length < 1,
+	};
+};

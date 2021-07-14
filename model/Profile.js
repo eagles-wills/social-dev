@@ -10,7 +10,7 @@ const ProfileSchema = new Schema({
 	location: String,
 	website: String,
 	status: String,
-	skills: [String],
+	skills: { type: [String], required: [true, "please enter one skill"] },
 	bio: String,
 	githubusername: String,
 	Experience: [

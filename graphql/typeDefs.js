@@ -1,6 +1,20 @@
 import { gql } from "apollo-server";
 
 const typeDefs = gql`
+	input ProfileInput {
+		company: String
+		location: String
+		website: String
+		status: String!
+		skills: String!
+		bio: String
+		githubusername: String
+		youtube: String
+		whatsapp: String
+		twitter: String
+		facebook: String
+		github: String
+	}
 	type User {
 		id: ID!
 		name: String!
@@ -41,19 +55,21 @@ const typeDefs = gql`
 
 	type Profile {
 		id: ID!
-		company: String!
-		location: String!
-		website: String!
+		company: String
+		location: String
+		website: String
 		status: String!
-		skills: [String]!
-		bio: String!
-		githubusername: String!
+		skills: [String!]!
+		bio: String
+		githubusername: String
 		experience: [Experience]!
 		education: [Education]!
 		social: Social
 	}
 	type Query {
 		getCurrentUserProfile: Profile!
+		getAllProfiles: [Profile]!
+		getProfileByUserId(userId: ID!): Profile!
 	}
 
 	type Mutation {
@@ -65,6 +81,8 @@ const typeDefs = gql`
 		): User!
 
 		loginUser(email: String!, password: String!): User!
+		createAndUpdateProfile(profileInput: ProfileInput): Profile!
+		deleteUser: String!
 	}
 `;
 

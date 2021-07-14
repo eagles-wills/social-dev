@@ -10,6 +10,7 @@ const resolvers = {
 
 	Mutation: {
 		...userResolvers.Mutation,
+		...profileResolvers.Mutation,
 	},
 };
 
