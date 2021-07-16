@@ -2,7 +2,11 @@ import { UserInputError } from "apollo-server";
 import Profile from "../../model/Profile.js";
 import User from "../../model/User.js";
 import checkAuth from "../../util/checkAuth.js";
-import { validateCreateAndUpdateProfile } from "../../util/validator.js";
+import {
+	validateCreateAndUpdateProfile,
+	validateEducationProfile,
+	validateExperienceProfile,
+} from "../../util/validator.js";
 
 const profileResolvers = {
 	Query: {
@@ -123,6 +127,149 @@ const profileResolvers = {
 				await Profile.findOneAndRemove({ user: user.id });
 				// remove the user
 				await User.findOneAndRemove({ _id: user.id });
+			} catch (error) {
+				console.log(error);
+			}
+		},
+
+		addExperience: async (
+			_,
+			{ title, company, location, description, from, to, current },
+			context,
+		) => {
+			const user = checkAuth(context);
+			const { errors, valid } = validateExperienceProfile(
+				title,
+				company,
+				from,
+			);
+			if (!valid) throw new UserInputError("Errors", { errors });
+			try {
+				let profile = await Profile.findOne({ user: user.id });
+
+				if (!profile)
+					throw new UserInputError("Error", {
+						errors: { msg: "profile not found" },
+					});
+				const newExp = {
+					title,
+					company,
+					location,
+					description,
+					from,
+					to,
+					current,
+				};
+				if (profile) {
+					profile = await Profile.findOneAndUpdate(
+						{ user: user.id },
+						{ $set: { experience: [newExp] } },
+					);
+
+					console.log("add experience updated");
+				}
+
+				profile.experience.push(newExp);
+				await profile.save();
+				console.log("experience added");
+				return profile;
+			} catch (error) {
+				console.log(error);
+			}
+		},
+
+		deleteExp: async (_, { expId }, context) => {
+			const user = checkAuth(context);
+			try {
+				const profile = await Profile.findOne({ user: user.id });
+				if (!profile)
+					throw new UserInputError("Error", {
+						errors: { msg: "profile not found" },
+					});
+				console.log(profile.user, user.id);
+				if (profile.user.toString() === user.id) {
+					const removeIndex = profile.experience
+						.map((item) => item._id)
+						.indexOf(expId);
+					console.log(removeIndex, "This is the remove index");
+					profile.experience.splice(removeIndex, 1);
+					await profile.save();
+					return profile;
+				}
+				throw new UserInputError("Error", {
+					errors: { msg: "user not auhtorized to delete profile" },
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		},
+		addEducation: async (
+			_,
+			{ school, degree, fieldofstudy, from, to, current },
+			context,
+		) => {
+			const user = checkAuth(context);
+			const { errors, valid } = validateEducationProfile(
+				school,
+				degree,
+				fieldofstudy,
+				from,
+			);
+			if (!valid) throw new UserInputError("Errors", { errors });
+			try {
+				let profile = await Profile.findOne({ user: user.id });
+
+				if (!profile)
+					throw new UserInputError("Error", {
+						errors: { msg: "profile not found" },
+					});
+				const newEdu = {
+					school,
+					degree,
+					fieldofstudy,
+					from,
+					to,
+					current,
+				};
+				if (profile) {
+					profile = await Profile.findOneAndUpdate(
+						{ user: user.id },
+						{ $set: { education: [newEdu] } },
+					);
+
+					console.log("add experience updated");
+				}
+
+				profile.experience.push(newEdu);
+				await profile.save();
+				console.log("experience added");
+				return profile;
+			} catch (error) {
+				console.log(error);
+			}
+		},
+
+		deleteEdu: async (_, { eduId }, context) => {
+			const user = checkAuth(context);
+			try {
+				const profile = await Profile.findOne({ user: user.id });
+				if (!profile)
+					throw new UserInputError("Error", {
+						errors: { msg: "profile not found" },
+					});
+				console.log(profile.user, user.id);
+				if (profile.user.toString() === user.id) {
+					const removeIndex = profile.education
+						.map((item) => item._id)
+						.indexOf(eduId);
+					console.log(removeIndex, "This is the remove index");
+					profile.education.splice(removeIndex, 1);
+					await profile.save();
+					return profile;
+				}
+				throw new UserInputError("Error", {
+					errors: { msg: "user not auhtorized to delete profile" },
+				});
 			} catch (error) {
 				console.log(error);
 			}

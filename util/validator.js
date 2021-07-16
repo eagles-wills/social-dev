@@ -63,3 +63,49 @@ export const validateCreateAndUpdateProfile = (status, skills) => {
 		valid: Object.keys(errors).length < 1,
 	};
 };
+
+export const validateExperienceProfile = (title, company, from) => {
+	const errors = {};
+
+	if (title === "") {
+		errors.title = "title is required";
+	}
+	if (company === "") {
+		errors.company = "company is required";
+	}
+	if (from === "") {
+		errors.from = "from is required";
+	}
+
+	return {
+		errors,
+		valid: Object.keys(errors).length < 1,
+	};
+};
+export const validateEducationProfile = (
+	school,
+	degree,
+	fieldofstudy,
+	from,
+) => {
+	const errors = {};
+
+	if (school === "") {
+		errors.school = "title is required";
+	}
+	if (degree === "") {
+		errors.degree = "company is required";
+	}
+	if (fieldofstudy === "") {
+		errors.fieldofstudy = "title is required";
+	}
+
+	if (from === "") {
+		errors.from = "from is required";
+	}
+
+	return {
+		errors,
+		valid: Object.keys(errors).length < 1,
+	};
+};

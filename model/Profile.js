@@ -13,11 +13,11 @@ const ProfileSchema = new Schema({
 	skills: { type: [String], required: [true, "please enter one skill"] },
 	bio: String,
 	githubusername: String,
-	Experience: [
+	experience: [
 		{
 			title: String,
 			company: String,
-			loction: String,
+			location: String,
 			from: String,
 			to: String,
 			current: Boolean,
@@ -25,7 +25,7 @@ const ProfileSchema = new Schema({
 			createdAt: String,
 		},
 	],
-	Education: [
+	education: [
 		{
 			school: String,
 			degree: String,

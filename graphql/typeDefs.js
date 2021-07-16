@@ -25,10 +25,11 @@ const typeDefs = gql`
 	}
 
 	type Experience {
-		title: String
-		company: String
-		loction: String
-		from: String
+		id: ID!
+		title: String!
+		company: String!
+		location: String
+		from: String!
 		to: String
 		current: Boolean
 		description: String
@@ -36,6 +37,7 @@ const typeDefs = gql`
 	}
 
 	type Education {
+		id: ID
 		school: String
 		degree: String
 		fieldofstudy: String
@@ -83,6 +85,28 @@ const typeDefs = gql`
 		loginUser(email: String!, password: String!): User!
 		createAndUpdateProfile(profileInput: ProfileInput): Profile!
 		deleteUser: String!
+		addExperience(
+			title: String!
+			company: String!
+			from: String!
+			to: String
+			description: String
+			location: String
+			current: Boolean
+		): Profile!
+
+		deleteExp(expId: ID!): Profile!
+		addEducation(
+			school: String!
+			degree: String!
+			from: String!
+			to: String
+			fieldofstudy: String
+			current: Boolean
+			eduId: ID!
+		): Profile!
+
+		deleteEdu(eduId: ID!): Profile!
 	}
 `;
 
