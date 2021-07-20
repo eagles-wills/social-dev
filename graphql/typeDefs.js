@@ -24,6 +24,17 @@ const typeDefs = gql`
 		avatar: String!
 	}
 
+	type GithubUser {
+		githubLogin: String
+		name: String
+		avatar: String
+	}
+
+	type AuthPayload {
+		user: GithubUser!
+		token: String
+	}
+
 	type Experience {
 		id: ID!
 		title: String!
@@ -68,10 +79,34 @@ const typeDefs = gql`
 		education: [Education]!
 		social: Social
 	}
+	type Likes {
+		id: ID!
+		name: String!
+		createdAt: String
+	}
+	type Comments {
+		id: ID!
+		name: String!
+		text: String!
+		avatar: String!
+		createdAt: String
+	}
+	type Post {
+		id: ID!
+		name: String!
+		avatar: String
+		text: String!
+		likes: [Likes]!
+		comments: [Comments]!
+		createdAt: String
+	}
 	type Query {
 		getCurrentUserProfile: Profile!
 		getAllProfiles: [Profile]!
 		getProfileByUserId(userId: ID!): Profile!
+		githubLoginURL: String!
+		getAllPost: [Post]!
+		getPostByUserId(userId: ID!): Post!
 	}
 
 	type Mutation {
@@ -107,6 +142,12 @@ const typeDefs = gql`
 		): Profile!
 
 		deleteEdu(eduId: ID!): Profile!
+		authorizeWithGitHub(code: String!): AuthPayload!
+		addPost(text: String): Post!
+		deletePost(userId: ID!): String!
+		addLike(userId: ID!): Post!
+		addComment(text: String!): Post!
+		deleteComment(postId: ID!, commentId: ID!): Post!
 	}
 `;
 

@@ -9,14 +9,17 @@
 	},
 	"dependencies": {
 		"apollo-server": "^2.25.2",
+		"axios": "^0.21.1",
 		"bcryptjs": "^2.4.3",
 		"colors": "^1.4.0",
 		"config": "^3.3.6",
+		"cross-fetch": "^3.1.4",
 		"graphql": "^15.5.1",
 		"gravatar": "^1.8.1",
 		"jsonwebtoken": "^8.5.1",
 		"moment": "^2.29.1",
 		"mongoose": "^5.13.2",
+		"request": "^2.88.2",
 		"zustand": "^3.5.6"
 	}
 }

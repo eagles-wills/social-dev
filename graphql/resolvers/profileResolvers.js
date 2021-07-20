@@ -1,13 +1,17 @@
 import { UserInputError } from "apollo-server";
+import config from "config";
+import request from "request";
 import Profile from "../../model/Profile.js";
 import User from "../../model/User.js";
 import checkAuth from "../../util/checkAuth.js";
+import requestGithubUser from "../../util/githubApi.js";
 import {
 	validateCreateAndUpdateProfile,
 	validateEducationProfile,
 	validateExperienceProfile,
 } from "../../util/validator.js";
 
+let currentUser;
 const profileResolvers = {
 	Query: {
 		getCurrentUserProfile: async (_, __, context) => {
@@ -47,6 +51,10 @@ const profileResolvers = {
 				console.log(error);
 			}
 		},
+		githubLoginURL: () =>
+			`https://github.com/login/oauth/authorize?client_id=${config.get(
+				"client_id",
+			)}&scope=user`,
 	},
 
 	Mutation: {
@@ -160,7 +168,7 @@ const profileResolvers = {
 					to,
 					current,
 				};
-				if (profile) {
+				if (profile.experience.length > 1) {
 					profile = await Profile.findOneAndUpdate(
 						{ user: user.id },
 						{ $set: { experience: [newExp] } },
@@ -231,18 +239,19 @@ const profileResolvers = {
 					to,
 					current,
 				};
-				if (profile) {
+				if (profile.education.length > 1) {
 					profile = await Profile.findOneAndUpdate(
 						{ user: user.id },
 						{ $set: { education: [newEdu] } },
 					);
-
-					console.log("add experience updated");
+					await profile.save();
+					console.log("add education updated");
+					return profile;
 				}
 
-				profile.experience.push(newEdu);
+				profile.education.push(newEdu);
 				await profile.save();
-				console.log("experience added");
+				console.log("education added");
 				return profile;
 			} catch (error) {
 				console.log(error);
@@ -270,6 +279,29 @@ const profileResolvers = {
 				throw new UserInputError("Error", {
 					errors: { msg: "user not auhtorized to delete profile" },
 				});
+			} catch (error) {
+				console.log(error);
+			}
+		},
+
+		authorizeWithGitHub: async (_, { code }) => {
+			try {
+				// obtain data from github
+				let githubUser = await requestGithubUser({
+					client_id: config.get("client_id"),
+					client_secret: config.get("client_secret"),
+					code,
+				});
+
+				// package the result in a single object
+				currentUser = {
+					name: githubUser.name,
+					githubLogin: githubUser.login,
+					avatar: githubUser.avatar_url,
+				};
+				console.log(currentUser);
+				console.log(githubUser);
+				return { user: currentUser, token: githubUser.access_token };
 			} catch (error) {
 				console.log(error);
 			}

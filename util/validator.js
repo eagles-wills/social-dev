@@ -109,3 +109,16 @@ export const validateEducationProfile = (
 		valid: Object.keys(errors).length < 1,
 	};
 };
+
+export const validatePost = (text) => {
+	const errors = {};
+
+	if (text === "") {
+		errors.text = "Please text cannot be empty";
+	}
+
+	return {
+		errors,
+		valid: Object.keys(errors).length < 1,
+	};
+};
