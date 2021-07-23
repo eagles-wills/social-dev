@@ -85,12 +85,12 @@ const userResolvers = {
 			const user = await User.findOne({ email });
 			if (!user)
 				throw new UserInputError("Wrong credentials", {
-					errors: "username/password mismatch",
+					errors: { username: "username/password mismatch" },
 				});
 			const match = await bcrypt.compare(password, user.password);
 			if (!match)
 				throw new UserInputError("Wrong credentials", {
-					errors: "username/password mismatch",
+					errors: { password: "username/password mismatch" },
 				});
 
 			const token = generateToken(user);
