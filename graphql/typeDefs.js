@@ -107,6 +107,7 @@ const typeDefs = gql`
 		githubLoginURL: String!
 		getAllPost: [Post]!
 		getPostByUserId(userId: ID!): Post!
+		getAuthUser: User!
 	}
 
 	type Mutation {

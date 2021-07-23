@@ -5,6 +5,7 @@ import config from "config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../../model/User.js";
+import checkAuth from "../../util/checkAuth.js";
 import {
 	validateRegisterUser,
 	validateLoginUser,
@@ -21,6 +22,24 @@ const generateToken = (user) => {
 };
 
 const userResolvers = {
+	Query: {
+		getAuthUser: async (_, __, context) => {
+			const { id } = checkAuth(context);
+			console.log(id);
+			try {
+				const user = await User.findOne({ _id: id });
+				const token = generateToken(user);
+				return {
+					...user._doc,
+					id: user._id,
+					token,
+				};
+			} catch (error) {
+				console.log(error);
+				throw new Error("Error", { error: "user not found" });
+			}
+		},
+	},
 	Mutation: {
 		registerUser: async (_, { name, email, password, confirmPassword }) => {
 			// validate user
